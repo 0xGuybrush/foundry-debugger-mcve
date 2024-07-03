@@ -1,66 +1,40 @@
-## Foundry
+## Foundry #5435 MCVE
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Minimal example to reproduce issue [#5435](https://github.com/foundry-rs/foundry/issues/5435) — i.e.
 
-Foundry consists of:
+> Unknown contract at address `<contract-address>`
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+when running the Debugger.
 
-## Documentation
+## Steps to reproduce
 
-https://book.getfoundry.sh/
+1. Run Anvil:
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+anvil
 ```
 
-### Test
+2. Deploy Counter Script using the first local wallet
 
-```shell
-$ forge test
+```bash
+forge script CounterScript \
+    --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+    --broadcast \
+    --rpc-url http://localhost:8545 \
+    -vvvv
 ```
 
-### Format
+This gives a contract address of `0x5FbDB2315678afecb367f032d93F642f64180aa3`.
 
-```shell
-$ forge fmt
+3. Run the `DebugRemote.s.sol`:
+
+```bash
+ADDR=0x5FbDB2315678afecb367f032d93F642f64180aa3 \ 
+forge debug \
+    --debug script/DebugRemote.s.sol:DebugRemote \
+    --fork-url http://127.0.0.1:8545
 ```
 
-### Gas Snapshots
 
-```shell
-$ forge snapshot
-```
 
-### Anvil
 
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
